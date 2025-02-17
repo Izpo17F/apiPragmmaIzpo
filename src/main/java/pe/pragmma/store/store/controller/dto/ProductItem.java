@@ -3,6 +3,7 @@ package pe.pragmma.store.store.controller.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,16 +13,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProductItem {
     private Integer id;
-    @NotBlank(message = "El nombre no puede ser vacia")
+    @NotBlank(message = "El ")
     private String name;
-    @NotBlank
+    @NotBlank()
     private String description;
-    @NotNull
-    @Positive
+    @NotNull()
+    @Positive()
     private Double price;
-    @NotNull
-    @Positive
+    @NotNull()
+    @PositiveOrZero()
     private Integer storage;
-    @NotBlank
     private Boolean active;
 }

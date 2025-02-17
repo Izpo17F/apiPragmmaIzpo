@@ -30,15 +30,15 @@ public class ProductEntity {
     @Column(name = "active")
     private Boolean active;
     @CreatedDate
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
     @CreatedBy
-    @Column(name = "created_by")
+    @Column(name = "created_by", updatable = false)
     private String createdBy;
     @LastModifiedDate
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", insertable = false)
     private LocalDateTime updatedAt;
     @LastModifiedBy
-    @Column(name = "updated_by")
+    @Column(name = "updated_by", insertable = false)
     private String updatedBy;
 }

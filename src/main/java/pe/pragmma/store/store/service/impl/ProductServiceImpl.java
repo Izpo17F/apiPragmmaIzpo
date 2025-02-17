@@ -20,7 +20,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductItem> list() {
-        return ProductMapper.toDtoList(productRepository.findAll());
+        List<ProductEntity> productEntities = productRepository.findByActive();
+        return ProductMapper.toDtoList(productEntities);
     }
 
     public ProductItem getById(Integer id){
@@ -45,6 +46,7 @@ public class ProductServiceImpl implements ProductService {
 
     public Optional<ProductItem> create(ProductItem productItem){
         ProductEntity productEntity = ProductMapper.toEntity(productItem, new ProductEntity());
+        productEntity.setActive(true);
         return Optional.of(ProductMapper.toDto(productRepository.save(productEntity)));
     }
 
