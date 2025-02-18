@@ -84,3 +84,16 @@ alter table users add constraint user__role__fk foreign key (role_id) references
 alter table users add constraint user_doc_type_fk foreign key (doc_type_id) references doc_type(id);
 alter table sale_detail add constraint sale_detail__product__fk foreign key (product_id) references product(id);
 alter table sale_detail add constraint sale_detail__sale__fk foreign key (sale_id) references sale(id);
+
+
+insert into role( name, description, active, created_at, created_by)
+values ('admin', 'can perform crud operations', 1, now(), 'flyway');
+
+insert into role(name, description, active, created_at, created_by)
+values ('user', 'can perform read operations', 1, now(), 'flyway');
+
+insert into doc_type(name, description, active, created_at, created_by)
+values('DNI', 'Documento Nacional de Identidad', 1, now(), 'flyway');
+
+insert into doc_type(name, description, active, created_at, created_by)
+values('CE', 'Carnet de Extranjeria', 1, now(), 'flyway');
