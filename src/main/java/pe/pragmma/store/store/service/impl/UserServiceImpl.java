@@ -1,8 +1,14 @@
 package pe.pragmma.store.store.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import pe.pragmma.store.store.controller.dto.LoginRequest;
+import pe.pragmma.store.store.controller.dto.LoginResponse;
 import pe.pragmma.store.store.controller.dto.UserDto;
 import pe.pragmma.store.store.exception.EntityNotFoundException;
 import pe.pragmma.store.store.repository.DocTypeRepository;
@@ -13,6 +19,7 @@ import pe.pragmma.store.store.repository.entity.RoleEntity;
 import pe.pragmma.store.store.repository.entity.UserEntity;
 import pe.pragmma.store.store.service.UserService;
 import pe.pragmma.store.store.service.mapper.UserMapper;
+import pe.pragmma.store.store.util.JwtUtil;
 
 import java.util.Optional;
 
@@ -25,6 +32,8 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
 
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
     @Override
     public UserDto createUser(UserDto userDto) {
@@ -63,4 +72,24 @@ public class UserServiceImpl implements UserService {
     public void getUsers() {
 
     }
+
+    public LoginResponse authenticate(LoginRequest loginRequest) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+
+            if (authentication.isAuthenticated()) {
+                UserEntity userEntity = userRepository.findByUsernameAndActive(loginRequest.getUsername(), Boolean.TRUE)
+                        .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado o inactivo"));
+
+                String token = jwtUtil.generateToken(userEntity.getUsername(), userEntity.getRole().getName());
+                return new LoginResponse(token, UserMapper.toDto(userEntity));
+            } else {
+                throw new BadRequestException("Las credenciales son incorrectas o el usuario no está activo.");
+            }
+        } catch (Exception e) {
+            return new LoginResponse("Error durante la autenticación: " + e.getMessage(), null);
+        }
+    }
+
 }

@@ -4,10 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import pe.pragmma.store.store.controller.dto.LoginRequest;
+import pe.pragmma.store.store.controller.dto.LoginResponse;
 import pe.pragmma.store.store.controller.dto.UserDto;
 import pe.pragmma.store.store.service.UserService;
 
@@ -21,5 +20,11 @@ public class UserController {
     public ResponseEntity<UserDto> createUser(@RequestBody @Valid UserDto user) {
         UserDto userDto = userService.createUser(user);
         return new ResponseEntity<>(userDto, HttpStatus.CREATED);
+    }
+   /**/
+    @GetMapping("/auth")
+    public ResponseEntity<LoginResponse> authenticate(@RequestBody @Valid LoginRequest loginRequest) {
+        LoginResponse loginResponse = userService.authenticate(loginRequest);
+        return new ResponseEntity<>(loginResponse, HttpStatus.OK);
     }
 }

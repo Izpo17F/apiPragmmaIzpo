@@ -1,5 +1,6 @@
 package pe.pragmma.store.store.config;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,9 +16,11 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Getter
 public class ProjectUserDetailService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private User userDetails;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
