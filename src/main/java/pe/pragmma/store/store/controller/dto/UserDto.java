@@ -22,7 +22,5 @@ public class UserDto {
     private Integer docTypeId;
     @NotBlank
     private String docNumber;
-    @NotNull
-    @Min(value = 1) @Max(value = 10)
     private Integer roleId;
 }

@@ -30,14 +30,16 @@ public class SecurityConfig {
                 requests.requestMatchers( "/swagger-ui/**").permitAll()
                     .requestMatchers( "/v3/api-docs*/**").permitAll()
 
-                    .requestMatchers( HttpMethod.POST,"/user/**").permitAll()
-                        .requestMatchers( HttpMethod.GET,"/user/auth").permitAll()
-                        .requestMatchers( "/user/**").authenticated()
+                    .requestMatchers( HttpMethod.POST,"/user/create").permitAll()
+                    .requestMatchers( HttpMethod.GET,"/user/auth").permitAll()
+                    .requestMatchers( "/user/**").authenticated()
 
                     .requestMatchers( HttpMethod.POST,"/product/**").hasRole("admin")
                     .requestMatchers( HttpMethod.PUT,"/product/**").hasRole("admin")
                     .requestMatchers( HttpMethod.DELETE,"/product/**").hasRole("admin")
                     .requestMatchers( "/product/**").authenticated()
+
+                    .requestMatchers(HttpMethod.POST, "/admin/**").hasRole("admin")
 
                     .anyRequest().authenticated()
             );

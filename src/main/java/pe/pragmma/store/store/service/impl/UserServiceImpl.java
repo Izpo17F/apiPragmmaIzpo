@@ -21,6 +21,8 @@ import pe.pragmma.store.store.service.UserService;
 import pe.pragmma.store.store.service.mapper.UserMapper;
 import pe.pragmma.store.store.util.JwtUtil;
 
+
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -37,16 +39,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto userDto) {
+
         Optional<DocTypeEntity> docType = docTypeRepository.findById(userDto.getDocTypeId());
         if(docType.isEmpty()){
             throw new EntityNotFoundException("El tipo de documento no existe");
         }
-        Optional<RoleEntity> role = roleRepository.findById(userDto.getRoleId());
-        if(role.isEmpty()){
-            throw new EntityNotFoundException("El rol no existe");
-        }
+        RoleEntity role = roleRepository.findById(2).orElseThrow(() -> new RuntimeException("Role no encontrado"));
         UserEntity userEntity = UserMapper.toEntity(userDto);
-        userEntity.setRole(role.get());
+        userEntity.setRole(role);
         userEntity.setPassword(passwordEncoder.encode(userDto.getPassword()));
         userEntity.setDocType(docType.get());
         userEntity.setActive(true);
@@ -54,23 +54,48 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(String username) {
-
+    public UserDto createAdmin(UserDto userAdmin) {
+        Optional<DocTypeEntity> docType = docTypeRepository.findById(userAdmin.getDocTypeId());
+        if(docType.isEmpty()){
+            throw new EntityNotFoundException("El tipo de documento no existe");
+        }
+        RoleEntity role = roleRepository.findById(1).orElseThrow(() -> new RuntimeException("Role no encontrado"));
+        UserEntity userEntity = UserMapper.toEntity(userAdmin);
+        userEntity.setRole(role);
+        userEntity.setPassword(passwordEncoder.encode(userAdmin.getPassword()));
+        userEntity.setDocType(docType.get());
+        userEntity.setActive(true);
+        return UserMapper.toDto(userRepository.save(userEntity));
     }
 
     @Override
-    public void updateUser(String username, String password, String role) {
-
+    public void deleteUser(Integer userId) {
+        UserEntity userEntity = userRepository.findByIdAndActive(userId, Boolean.TRUE)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+        userEntity.setActive(Boolean.FALSE);
+        userRepository.save(userEntity);
     }
 
     @Override
-    public void getUser(String username) {
-
+    public UserDto updateUser(UserDto userDto, Integer id) {
+        UserEntity userEntity = userRepository.findByIdAndActive(id,Boolean.TRUE)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no existe!!"));
+        userEntity.setUsername(userDto.getUsername());
+        userEntity.setFirstName(userDto.getFirstName());
+        userEntity.setLastName(userDto.getLastName());
+        return UserMapper.toDto(userRepository.save(userEntity));
     }
 
     @Override
-    public void getUsers() {
+    public UserDto getUser(Integer id) {
+        return UserMapper.toDto( userRepository.findByIdAndActive(id,Boolean.TRUE)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no existe!!")));
+    }
 
+    @Override
+    public List<UserDto> getUsers() {
+            return UserMapper.toListDto(userRepository
+                    .findAllActive(Boolean.TRUE));
     }
 
     public LoginResponse authenticate(LoginRequest loginRequest) {
